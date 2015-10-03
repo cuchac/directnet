@@ -1,4 +1,5 @@
 import serial
+import binascii
 
 
 class ControlCodes:
@@ -14,6 +15,11 @@ class ControlCodes:
 
 memory_map = {
     'V': 1,
+}
+
+bit_addresses = {
+    'C': 0xF000,
+    'T': 0xfC00,
 }
 
 
@@ -33,7 +39,8 @@ class Client(object):
 
     def enquiry(self):
         self.serial.write(b'N' + chr(0x20 + self.client_id) + ControlCodes.ENQ)
-        assert self.serial.read(size=3) == b'N' + chr(0x20 + self.client_id) + ControlCodes.ACK
+        ack = self.serial.read(size=3)
+        assert ack == b'N' + chr(0x20 + self.client_id) + ControlCodes.ACK, "ACK not received. Instead got: "+ack
 
     def get_request_header(self, read, address, size):
         # Header
@@ -51,7 +58,7 @@ class Client(object):
 
         # Address
         address = address[1:]
-        header += self.to_hex(int(address, base=8), 4)
+        header += self.to_hex(int(address, base=8)+1, 4)
 
         # No of blocks, bytes in last block
         header += self.to_hex(size / 256, 2)
@@ -82,9 +89,56 @@ class Client(object):
 
         return data
 
+    def write_bit(self, address, value):
+        header = ControlCodes.SOH
+
+        header += '44' if value else '45'
+
+        header += '01'
+
+        # Data type
+        memory_type = address[0]
+
+        # Address
+        address = address[1:]
+        header += self.to_hex(bit_addresses[memory_type]+int(address, base=8), 4)
+
+        header += ControlCodes.ETB
+
+        # Checksum
+        header += self.calc_csum(header[1:-2])
+        print header
+        #self.read_ack()
+
+    def read_bit(self, address):
+        header = ControlCodes.SOH
+
+        header += '\x40'
+
+        header += '\x01'
+
+        # Data type
+        memory_type = address[0]
+
+        # Address
+        address = address[1:]
+        address = bit_addresses[memory_type]+int(address, base=8)
+        header += self.to_hex_binary(address, 2)
+
+        header += '\x01'
+
+        header += ControlCodes.ETB
+
+        # Checksum
+        header += self.calc_csum(header[1:-2])
+        print(header, len(header))
+        self.serial.write(header)
+        print(repr(self.serial.readall()))
+        #self.read_ack()
+
     def read_ack(self):
         ack = self.serial.read(1)
-        assert ack == ControlCodes.ACK
+        assert ack == ControlCodes.ACK, ack + ' != ACK'
 
     def write_ack(self):
         self.serial.write(ControlCodes.ACK)
@@ -109,3 +163,7 @@ class Client(object):
     def to_hex(self, number, size):
         hex_chars = hex(number)[2:].upper()
         return ('0' * (size - len(hex_chars))) + hex_chars
+
+    def to_hex_binary(self, number, size):
+        hex_string = '%x' % number
+        return binascii.unhexlify(hex_string.zfill(size + (size & 1)))
