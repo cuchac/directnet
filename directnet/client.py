@@ -80,6 +80,10 @@ class Client(object):
 
         return data
 
+    def read_int(self, address):
+        data = self.read_value(address, 2)
+        return int(data[::-1].encode('hex'))
+
     def write_bit(self, address, value):
         self.enquiry()
 
@@ -139,7 +143,7 @@ class Client(object):
         self.write_ack()
         self.end_transaction()
 
-        return ord(data[2]) % 2 != 0
+        return ord(data[0]) % 2 != 0
 
     def read_ack(self):
         ack = self.serial.read(1)
@@ -156,7 +160,7 @@ class Client(object):
     def parse_data(self, size, additional=0):
         data = self.serial.read(4+size*2+4)  # STX + DATA + ETX + CSUM
         print('recieved data', data)
-        return data[4:-4 + additional]
+        return data[6:-4 + additional]
 
     def calc_csum(self, data):
         csum = 0

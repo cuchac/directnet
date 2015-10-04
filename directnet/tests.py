@@ -18,9 +18,10 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(self.client.calc_csum(b'\x30\x31\x30\x31\x30\x46\x45\x45\x30\x30\x30\x36\x30\x30'), b'\x70')
 
     def test_read(self):
-        print repr(self.client.read_value('V02240', 1))
-        print repr(self.client.read_value('V02240', 2))
-        print repr(self.client.read_value('V1242', 3))
+        print repr(self.client.read_int('V1520'))
+        print repr(self.client.read_int('V1767'))
+        print repr(self.client.read_int('V2162'))
+        print repr(self.client.read_int('V2166'))
         print repr(self.client.read_value('V1200', 4))
         print repr(self.client.read_value('V1202', 2))
 
