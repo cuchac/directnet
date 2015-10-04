@@ -64,9 +64,9 @@ class DirectNetTestCase(unittest.TestCase):
         self.assertEqual(self.client.calc_csum(b'\x30\x31\x30\x31\x30\x46\x45\x45\x30\x30\x30\x36\x30\x30'), b'\x70')
 
     def test_read(self):
-        print repr(self.client.read_value('V1520', 4))
-        print repr(self.client.read_value('V1767', 20))
-        print repr(self.client.read_value('V2162', 50))
+        print self.client.read_int('V1520')
+        print self.client.read_int('V1767')
+        print self.client.read_int('V2162')
 
 
 if __name__ == '__main__':

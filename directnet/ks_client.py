@@ -1,4 +1,3 @@
-import serial
 import binascii
 from directnet.common import ControlCodes
 from directnet.dn_client import DNClient
@@ -15,7 +14,7 @@ class KSClient(DNClient):
     Client for accessing serial port using K-Sequence protocol
     """
 
-    __ENQUIRY_ID = b'K'
+    ENQUIRY_ID = b'K'
 
     def get_request_header(self, read, address, size):
         # Header 01:40:01:0f:ed:03:17:a0

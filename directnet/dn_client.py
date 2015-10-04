@@ -13,7 +13,7 @@ class DNClient(object):
     @type serial: serial.Serial
     """
 
-    __ENQUIRY_ID = b'N'
+    ENQUIRY_ID = b'N'
 
     def __init__(self, port):
         self.serial = serial.serial_for_url(port, timeout=1, parity=serial.PARITY_ODD)
@@ -26,9 +26,9 @@ class DNClient(object):
         self.serial.close()
 
     def enquiry(self):
-        self.serial.write(b'K' + chr(0x20 + self.client_id) + ControlCodes.ENQ)
+        self.serial.write(self.ENQUIRY_ID + chr(0x20 + self.client_id) + ControlCodes.ENQ)
         ack = self.serial.read(size=3)
-        assert ack == b'K' + chr(0x20 + self.client_id) + ControlCodes.ACK, "ACK not received. Instead got: "+repr(ack)
+        assert ack == self.ENQUIRY_ID + chr(0x20 + self.client_id) + ControlCodes.ACK, "ACK not received. Instead got: "+repr(ack)
 
     def get_request_header(self, read, address, size):
         # Header
@@ -46,7 +46,7 @@ class DNClient(object):
 
         # Address
         address = address[1:]
-        header += self.to_hex(int(address, base=8), 4)
+        header += self.to_hex(int(address, base=8)+1, 4)
 
         # No of blocks, bytes in last block
         header += self.to_hex(size / 256, 2)
@@ -70,7 +70,7 @@ class DNClient(object):
 
         self.read_ack()
 
-        data = self.parse_data(8)
+        data = self.parse_data(size)
 
         self.write_ack()
 
