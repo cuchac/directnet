@@ -1,12 +1,17 @@
 import unittest
-from directnet.client import Client
+from directnet import KSClient, DNClient
 
 
-class MyTestCase(unittest.TestCase):
+class KSequenceTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        super(MyTestCase, cls).setUpClass()
-        cls.client = Client('rfc2217://10.0.0.6:12345')
+        super(KSequenceTestCase, cls).setUpClass()
+        cls.client = KSClient('rfc2217://10.0.0.6:12345')
+
+    @classmethod
+    def tearDownClass(cls):
+        super(KSequenceTestCase, cls).tearDownClass()
+        cls.client.disconnect()
 
     def test_hex(self):
         self.assertEqual(self.client.to_hex(10, 1), '\x0A')
@@ -37,6 +42,35 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(self.client.read_bit('C62'), False)
         self.assertEqual(self.client.read_bit('C63'), True)
         self.assertEqual(self.client.read_bit('C64'), False)
+
+
+class DirectNetTestCase(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super(DirectNetTestCase, cls).setUpClass()
+        cls.client = DNClient('rfc2217://10.0.0.6:12345')
+
+    @classmethod
+    def tearDownClass(cls):
+        super(DirectNetTestCase, cls).tearDownClass()
+        cls.client.disconnect()
+
+    def test_hex(self):
+        self.assertEqual(self.client.to_hex(10, 1), 'A')
+        self.assertEqual(self.client.to_hex(10, 3), '00A')
+        self.assertEqual(self.client.to_hex(72, 3), '048')
+
+    def test_csum(self):
+        self.assertEqual(self.client.calc_csum(b'\x30\x31\x30\x31\x30\x46\x45\x45\x30\x30\x30\x36\x30\x30'), b'\x70')
+
+    def test_read(self):
+        print repr(self.client.read_value('V1520', 4))
+        print repr(self.client.read_value('V1767', 20))
+        print repr(self.client.read_value('V2162', 50))
+
+
+if __name__ == '__main__':
+    unittest.main()
 
 
 if __name__ == '__main__':
