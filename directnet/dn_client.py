@@ -26,9 +26,9 @@ class DNClient(object):
         self.serial.close()
 
     def enquiry(self):
-        self.serial.write(self.ENQUIRY_ID + chr(0x20 + self.client_id) + ControlCodes.ENQ)
+        self.serial.write(self.ENQUIRY_ID + chr(0x20 + self.client_id).encode() + ControlCodes.ENQ)
         ack = self.serial.read(size=3)
-        assert ack == self.ENQUIRY_ID + chr(0x20 + self.client_id) + ControlCodes.ACK, "ACK not received. Instead got: "+repr(ack)
+        assert ack == self.ENQUIRY_ID + chr(0x20 + self.client_id).encode() + ControlCodes.ACK, "ACK not received. Instead got: "+repr(ack)
 
     def get_request_header(self, read, address, size):
         # Header
