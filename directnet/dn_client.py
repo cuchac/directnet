@@ -118,7 +118,7 @@ class DNClient(object):
 
     def to_int(self, value):
         if isinstance(value, int):
-            return int
+            return value
         return ord(value)
 
     def to_bytes(self, value):
