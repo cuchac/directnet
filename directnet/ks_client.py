@@ -35,6 +35,7 @@ class KSClient(DNClient):
         header += ControlCodes.ETB
 
         # Checksum
+        print(header, self.calc_csum(header[1:-1]))
         header += self.calc_csum(header[1:-1])
 
         return header
@@ -59,9 +60,9 @@ class KSClient(DNClient):
 
         header = ControlCodes.SOH
 
-        header += '\x44' if value else '\x45'
+        header += b'\x44' if value else b'\x45'
 
-        header += '\x01'
+        header += b'\x01'
 
         # Data type
         memory_type = address[0]
@@ -85,9 +86,9 @@ class KSClient(DNClient):
 
         header = ControlCodes.SOH
 
-        header += '\x40'
+        header += b'\x40'
 
-        header += '\x01'
+        header += b'\x01'
 
         # Data type
         memory_type = address[0]
@@ -97,7 +98,7 @@ class KSClient(DNClient):
         address = bit_addresses[memory_type]+int(address, base=8)
         header += self.to_hex(address, 2)
 
-        header += '\x01'
+        header += b'\x01'
 
         header += ControlCodes.ETB
 
@@ -112,7 +113,7 @@ class KSClient(DNClient):
         self.write_ack()
         self.end_transaction()
 
-        return ord(data[0]) % 2 != 0
+        return self.to_int(data[0]) % 2 != 0
 
     def parse_data(self, size, additional=0):
         data = self.serial.read(4+size*2+4)  # STX + DATA + ETX + CSUM

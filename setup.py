@@ -11,5 +11,5 @@ setup(
     author='Cuchac',
     author_email='cuchac@email.cz',
     description='DirectNET communication library',
-    requires=['pyserial',]
+    requires=['pyserial', 'six']
 )

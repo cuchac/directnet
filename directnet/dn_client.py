@@ -1,5 +1,7 @@
 import serial
+import six
 from directnet.common import ControlCodes
+from codecs import encode, decode
 
 memory_map = {
     'V': 1,
@@ -80,7 +82,7 @@ class DNClient(object):
 
     def read_int(self, address):
         data = self.read_value(address, 2)
-        return int(data[::-1].encode('hex'))
+        return int(encode(data[::-1], 'hex'))
 
     def read_ack(self):
         ack = self.serial.read(1)
@@ -106,10 +108,20 @@ class DNClient(object):
         csum = 0
 
         for item in data:
-            csum ^= ord(item)
+            csum ^= self.to_int(item)
 
-        return bytes(chr(csum))
+        return self.to_bytes(csum)
 
     def to_hex(self, number, size):
         hex_chars = hex(number)[2:].upper()
         return ('0' * (size - len(hex_chars))) + hex_chars
+
+    def to_int(self, value):
+        if isinstance(value, int):
+            return int
+        return ord(value)
+
+    def to_bytes(self, value):
+        if six.PY3:
+            return bytes((value,))
+        return chr(value)
