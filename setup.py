@@ -1,15 +1,15 @@
-from distutils.core import setup
+from setuptools import setup
 
 import directnet
 
 setup(
     name='directnet',
     version=directnet.version,
-    packages=['directnet'],
+    packages=('directnet',),
     url='https://github.com/cuchac/directnet',
     license='LGPL v2',
     author='Cuchac',
     author_email='cuchac@email.cz',
     description='DirectNET communication library',
-    requires=['pyserial', 'six']
+    install_requires=('pyserial', 'six'),
 )
