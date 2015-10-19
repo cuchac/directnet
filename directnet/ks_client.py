@@ -35,7 +35,6 @@ class KSClient(DNClient):
         header += ControlCodes.ETB
 
         # Checksum
-        print(header, self.calc_csum(header[1:-1]))
         header += self.calc_csum(header[1:-1])
 
         return header
