@@ -5,7 +5,8 @@ from directnet.dn_client import DNClient
 
 bit_addresses = {
     'C': 0xF000,
-    'T': 0xfC00,
+    'T': 0xFC00,
+    'S': 0xF800,
 }
 
 
