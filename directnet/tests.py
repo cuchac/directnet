@@ -1,5 +1,39 @@
 import unittest
 from directnet import KSClient, DNClient
+from directnet.ks_net_client import KSNetClient
+
+
+class KSequenceNetTestCase(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super(KSequenceNetTestCase, cls).setUpClass()
+        cls.client = KSNetClient('10.0.0.209', 28784)
+
+    @classmethod
+    def tearDownClass(cls):
+        super(KSequenceNetTestCase, cls).tearDownClass()
+        cls.client.disconnect()
+
+    def test_read(self):
+        print(repr(self.client.read_int('V1520')))
+        print(repr(self.client.read_int('V1767')))
+        print(repr(self.client.read_int('V2162')))
+        print(repr(self.client.read_int('V2166')))
+        print(repr(self.client.read_value('V1200', 4)))
+        print(repr(self.client.read_value('V1202', 2)))
+
+    def test_bits(self):
+        # self.client.write_bit('C60', False)
+        # self.client.write_bit('C61', True)
+        # self.client.write_bit('C62', False)
+        # self.client.write_bit('C63', True)
+        # self.client.write_bit('C64', False)
+
+        self.assertEqual(self.client.read_bit('S7'), True)
+        self.assertEqual(self.client.read_bit('S10'), False)
+        self.assertEqual(self.client.read_bit('S11'), False)
+        self.assertEqual(self.client.read_bit('T13'), True)
+        self.assertEqual(self.client.read_bit('C64'), False)
 
 
 class KSequenceTestCase(unittest.TestCase):
