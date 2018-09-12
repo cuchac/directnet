@@ -23,8 +23,8 @@ class KSequenceNetTestCase(unittest.TestCase):
         print(repr(self.client.read_value('V1202', 2)))
 
     def test_bits(self):
-        # self.client.write_bit('C60', False)
-        # self.client.write_bit('C61', True)
+        self.client.write_bit('C40', False)
+        self.client.write_bit('C40', True)
         # self.client.write_bit('C62', False)
         # self.client.write_bit('C63', True)
         # self.client.write_bit('C64', False)

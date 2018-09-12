@@ -89,12 +89,8 @@ class KSNetClient(KSClient):
         return data[:size]
 
     def write_bit(self, address, value):
-        self.enquiry()
-
         header = ControlCodes.SOH
-
         header += b'\x44' if value else b'\x45'
-
         header += b'\x01'
 
         # Data type
@@ -103,16 +99,15 @@ class KSNetClient(KSClient):
         # Address
         address = address[1:]
         header += self.to_hex(bit_addresses[memory_type]+int(address, base=8), 2)
-
         header += ControlCodes.ETB
 
         # Checksum
         header += self.calc_csum(header[1:-1])
 
-        self.serial.write(header)
-        self.parse_data(0)
-        self.write_ack()
-        self.end_transaction()
+        self.send_kseq(header)
+
+        self.read_ack()
+        self.read_data()
 
     def read_bit(self, address):
         header = ControlCodes.SOH
