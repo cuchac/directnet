@@ -143,7 +143,7 @@ class KSNetClient(KSClient):
 
     def to_hex(self, number, size):
         hex_string = '%x' % number
-        return binascii.unhexlify(hex_string.zfill(size*2 + (size*2 & 1)))
+        return binascii.unhexlify(hex_string.zfill(size * 2)[0:size*2])
 
     def to_hex_le(self, number, size):
         return bytes(reversed(self.to_hex(number, size)))
