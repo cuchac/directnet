@@ -27,7 +27,7 @@ class KSNetClient(KSClient):
         net_data += self.to_hex_le(len(kseq_data), 2)
         net_data += kseq_data
 
-        self.counter += 1
+        self.counter = (self.counter + 1) % 256
 
         data = bytearray()
         data += b"HAP"
