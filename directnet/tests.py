@@ -28,6 +28,8 @@ class KSequenceNetTestCase(unittest.TestCase):
         # self.client.write_bit('C62', False)
         # self.client.write_bit('C63', True)
         # self.client.write_bit('C64', False)
+        print(repr(self.client.write_int('V2244', 8)))
+
 
         self.assertEqual(self.client.read_bit('S7'), True)
         self.assertEqual(self.client.read_bit('S10'), False)

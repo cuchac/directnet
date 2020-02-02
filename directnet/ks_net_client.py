@@ -1,5 +1,6 @@
 import binascii
 import socket
+from codecs import decode
 
 from directnet.ks_client import KSClient, bit_addresses
 from directnet.common import ControlCodes
@@ -108,6 +109,34 @@ class KSNetClient(KSClient):
 
         self.read_ack()
         self.read_data()
+
+    def write_value(self, address, value, size=2):
+        header = ControlCodes.SOH
+        header += b'\x46'
+        header += b'\x01'
+
+        # Address
+        address = address[1:]
+        header += self.to_hex(int(address, base=8), 2)
+
+        # Value
+        header += b'\x01'
+        header += value[0:size][::-1]
+
+        header += ControlCodes.ETB
+
+        # Checksum
+        header += self.calc_csum(header[1:-1])
+
+        self.send_kseq(header)
+
+        self.read_ack()
+        self.read_data()
+
+    def write_int(self, address, value):
+        size = 2
+        value = str(value).zfill(size * 2)[0:size * 2]
+        return self.write_value(address, decode(value, 'hex'), 2)
 
     def read_bit(self, address):
         header = ControlCodes.SOH
