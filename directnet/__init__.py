@@ -1,4 +1,4 @@
-version = '2.4'
+version = '2.5'
 
 from .dn_client import DNClient
 from .ks_client import KSClient
